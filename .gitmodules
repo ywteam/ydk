@@ -1,3 +1,15 @@
 [submodule "src/python"]
 	path = src/python
 	url = https://github.com/ywteam/ydk.python.git
+[submodule "src/dotnet"]
+	path = src/dotnet
+	url = https://github.com/ywteam/ydk.dotnet.git
+[submodule "src/go"]
+	path = src/go
+	url = https://github.com/ywteam/ydk.go.git
+[submodule "src/shell"]
+	path = src/shell
+	url = https://github.com/ywteam/ydk.shell.git
+[submodule "src/node"]
+	path = src/node
+	url = https://github.com/ywteam/ydk.node.git
