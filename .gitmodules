@@ -1,6 +1,3 @@
 [submodule "src/python"]
 	path = src/python
 	url = https://github.com/ywteam/ydk.python.git
-[submodule "dotnet"]
-	path = dotnet
-	url = https://github.com/ywteam/ydk.dotnet.git
