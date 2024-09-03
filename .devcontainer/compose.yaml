@@ -1,0 +1,20 @@
+services:  
+  ydk-workspace:
+    container_name: ydk-workspace
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - USER_ID=${UID:-1000}
+        - GROUP_ID=${GID:-1000}
+    environment:
+      - NODE_ENV=development
+      - HOST_USER_ID=${UID:-1000}
+      - HOST_GROUP_ID=${GID:-1000}
+    # image: mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye
+    # command: /bin/sh -c "sleep infinity "
+    # command: bash -c "npm install && npm run build && npm run test"
+    networks:
+      - ywteam      
+    volumes:
+      - .:/workspace:cached      

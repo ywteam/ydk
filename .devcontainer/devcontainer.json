@@ -1,0 +1,63 @@
+{
+    "name": "YDK Node",
+    "dockerComposeFile": [
+        "../../../compose.devcontainer.yml",
+        "compose.yaml"
+    ],
+    "service": "ydk-workspace",
+    "shutdownAction": "none",
+    "workspaceFolder": "/workspace",
+    "containerUser": "root",
+    "features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "vscode",
+            "upgradePackages": "true"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "none"
+        },
+		"ghcr.io/devcontainers/features/git:1": {
+            "version": "latest",
+            "ppa": "false"
+        }
+	},
+    "customizations": {
+        "vscode": {
+			"extensions": [
+				"orta.vscode-jest",
+                "firsttris.vscode-jest-runner",
+                "dbaeumer.vscode-eslint",
+                "angular.ng-template",
+                "ms-azuretools.vscode-docker",
+                "github.vscode-github-actions",
+                "nrwl.angular-console",
+                "postman.postman-for-vscode",
+                "ms-dotnettools.csdevkit",
+                "ms-dotnettools.csharp",
+                "Supabase.vscode-supabase-extension",
+                "humao.rest-client",
+                "golang.go",
+                "premparihar.gotestexplorer",
+                "timonwong.shellcheck",
+				"jetmartin.bats",
+				"foxundermoon.shell-format",
+				"bmalehorn.shell-syntax",
+				"rogalmic.bash-debug",
+				"humao.rest-client",
+				"github.vscode-github-actions"
+			]
+		} 
+    },
+    "forwardPorts": [4200, 4201],
+    "portsAttributes": {
+        "4200": {
+            "label": "console-svc",
+            "onAutoForward": "notify"
+        },
+        "4201": {
+            "label": "auth-svc",
+            "onAutoForward": "notify"
+        }
+    }
+}
