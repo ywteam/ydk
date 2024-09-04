@@ -13,3 +13,6 @@
 [submodule "src/node"]
 	path = src/node
 	url = https://github.com/ywteam/ydk.node.git
+[submodule "src/js"]
+	path = src/js
+	url = https://github.com/ywteam/ydk.js.git
