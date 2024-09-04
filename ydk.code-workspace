@@ -5,6 +5,7 @@
         }
     ],
     "settings": {
-        "dotnet.defaultSolution": "ydk.sln"
+        "dotnet.defaultSolution": "ydk.sln",
+        "deno.enable": true
     },
 }

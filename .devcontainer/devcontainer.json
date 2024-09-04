@@ -27,7 +27,7 @@
     "customizations": {
         "vscode": {
 			"extensions": [
-				"orta.vscode-jest",
+                "orta.vscode-jest",
                 "firsttris.vscode-jest-runner",
                 "dbaeumer.vscode-eslint",
                 "angular.ng-template",
@@ -42,13 +42,16 @@
                 "golang.go",
                 "premparihar.gotestexplorer",
                 "timonwong.shellcheck",
-				"jetmartin.bats",
-				"foxundermoon.shell-format",
-				"bmalehorn.shell-syntax",
-				"rogalmic.bash-debug",
-				"humao.rest-client",
-				"github.vscode-github-actions"
-			]
+                "jetmartin.bats",
+                "foxundermoon.shell-format",
+                "bmalehorn.shell-syntax",
+                "rogalmic.bash-debug",
+                "humao.rest-client",
+                "github.vscode-github-actions",
+                "esbenp.prettier-vscode",
+                "tamasfe.even-better-toml",
+                "denoland.vscode-deno"
+            ]
 		} 
     },
     "forwardPorts": [4200, 4201],
