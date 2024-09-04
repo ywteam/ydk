@@ -1,17 +1,19 @@
 {
-    "name": "YDK Node",
+    "name": "YDK Workspace",
     "dockerComposeFile": [
-        "../../../compose.devcontainer.yml",
+        // "../../../compose.devcontainer.yml",
         "compose.yaml"
     ],
     "service": "ydk-workspace",
     "shutdownAction": "none",
     "workspaceFolder": "/workspace",
     "containerUser": "root",
+    "remoteUser": "root",
     "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/devcontainers/features/common-utils:2": {
             "installZsh": "true",
-            "username": "vscode",
+            // "username": "root",
             "upgradePackages": "true"
         },
         "ghcr.io/devcontainers/features/node:1": {

@@ -5,16 +5,37 @@ services:
       context: .
       dockerfile: ./Dockerfile
       args:
-        - USER_ID=${UID:-1000}
-        - GROUP_ID=${GID:-1000}
+        - NODE_ENV=development
+        - USER_ID=${USER_ID:-1000}
+        - GROUP_ID=${GROUP_ID:-1000}
+        - DOTNET_VERSION${DOTNET_VERSION:-8.0}
+        - GO_VERSION=${GO_VERSION:-1.23.0}
+        - NODE_VERSION=${NODE_VERSION:-v20.17.0}
+        - PYTHON_VERSION=${PYTHON_VERSION:-3.12}
+        - PHP_VERSION=${PHP_VERSION:-8.4}
     environment:
       - NODE_ENV=development
-      - HOST_USER_ID=${UID:-1000}
-      - HOST_GROUP_ID=${GID:-1000}
+      - USER_ID=${USER_ID:-1000}
+      - GROUP_ID=${GROUP_ID:-1000}
+      - DOTNET_VERSION${DOTNET_VERSION:-8.0}
+      - GO_VERSION=${GO_VERSION:-1.23.0}
+      - NODE_VERSION=${NODE_VERSION:-v20.17.0}
+      - PYTHON_VERSION=${PYTHON_VERSION:-3.12}
+      - PHP_VERSION=${PHP_VERSION:-8.4}
     # image: mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye
     # command: /bin/sh -c "sleep infinity "
     # command: bash -c "npm install && npm run build && npm run test"
     networks:
-      - ywteam      
+      - ywteam   
+      - ydk-team   
     volumes:
-      - .:/workspace:cached      
+      - ../../../:/workspace:cached
+
+
+networks:
+  ydk-team:
+    name: ydk-team
+    driver: bridge
+  ywteam:
+    name: ywteam-dev
+    external: true
