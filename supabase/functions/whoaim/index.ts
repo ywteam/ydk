@@ -1,16 +1,10 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
-console.log("Hello from Functions!")
 
 Deno.serve(async (req) => {
   const { name } = await req.json()
   const data = {
-    message: `Hello ${name}!`,
+    message: `Hello ${name??''}!`,
   }
 
   return new Response(
@@ -24,9 +18,6 @@ Deno.serve(async (req) => {
   1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
   2. Make an HTTP request:
 
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/whoaim' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
+  src/node/library/packages/ydk-api/src/lib/config src/node/library/packages/ydk-api/src/lib/console src/node/library/packages/ydk-api/src/lib/data src/node/library/packages/ydk-api/src/lib/decorators src/node/library/packages/ydk-api/src/lib/entities src/node/library/packages/ydk-api/src/lib/events src/node/library/packages/ydk-api/src/lib/exceptions src/node/library/packages/ydk-api/src/lib/extensions src/node/library/packages/ydk-api/src/lib/hub src/node/library/packages/ydk-api/src/lib/i18n src/node/library/packages/ydk-api/src/lib/interfaces src/node/library/packages/ydk-api/src/lib/ioc src/node/library/packages/ydk-api/src/lib/log src/node/library/packages/ydk-api/src/lib/models src/node/library/packages/ydk-api/src/lib/policies src/node/library/packages/ydk-api/src/lib/specs src/node/library/packages/ydk-api/src/lib/ts src/node/library/packages/ydk-api/src/lib/value-object src/node/library/packages/ydk-api/src/lib/contants.ts
 
 */

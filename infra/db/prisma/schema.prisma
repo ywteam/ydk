@@ -1,0 +1,538 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPABASE_DB")
+}
+
+// #region Tests
+model Tests {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime? @default(now())
+  createdBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt   DateTime? @updatedAt
+  updatedBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt   DateTime?
+
+  @@map("y_tests")
+}
+
+// #endregion
+
+// #region Connectors
+model Connectors {
+  id        String    @id @default(uuid())
+  // credentials   Credentials[]
+  name      String    @unique
+  enabled   Boolean   @default(false)
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_connectors")
+}
+
+// #endregion
+
+// #region Authentication
+model RefreshTokens {
+  id        String    @id @default(uuid())
+  issuer    String
+  audience  String
+  subject   String
+  token     String    @unique
+  expiresAt DateTime?
+  revokedAt DateTime?
+  parentId  String?
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_auth_refresh_tokens")
+}
+model MfaFactors {
+  id           String    @id @default(uuid())
+  userId       String?
+  friendlyName String?
+  type         Int
+  status       Int
+  key          String?
+  createdAt    DateTime? @default(now())
+  createdBy    String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt    DateTime? @updatedAt
+  updatedBy    String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt    DateTime?
+
+  @@map("y_auth_mfa_factors")
+}
+model MfaChallenges {
+  id         String    @id @default(uuid())
+  factorId   String?
+  challenge  String?
+  expiresAt  DateTime?
+  verifiedAt DateTime?
+  createdAt  DateTime? @default(now())
+  createdBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt  DateTime? @updatedAt
+  updatedBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt  DateTime?
+
+  @@map("y_auth_mfa_challenges")
+}
+model FlowState {
+  id        String    @id @default(uuid())
+  userId    String?
+  factorId  String?
+  authzCode String?
+  challengeMethod Int?
+  challenge String?
+  providerType String?
+  providerAccessToken String?
+  providerRefreshToken String?
+  authMethod Int?
+  expiresAt DateTime?
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_auth_flow_state")
+}
+
+// #endregion
+
+// #region Session Management
+model Sessions {
+  id        String    @id
+  loginAt   DateTime  @default(now())
+  logoutAt  DateTime?
+  deviceId  String?   @unique
+  device    Devices?  @relation(fields: [deviceId], references: [id])
+  accountId String?   @unique
+  account   Accounts? @relation(fields: [accountId], references: [id])
+  factorId  String?
+  aal       Int?      @default(0)
+  notAfter  DateTime?
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_sessions")
+}
+
+model Devices {
+  id        String    @id
+  ip        String
+  userAgent String
+  location  String
+  sessionId String
+  session   Sessions?
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  // @@index([id, sessionId], name: "session_id_unique")
+  @@map("y_session_devices")
+}
+
+// #endregion
+
+// #region Identity Management
+model Users {
+  id             String        @id @default(uuid())
+  type           Int // @default(USER)
+  // roles          Int[]
+  authorizations Permissions[]
+  identity       Identities?
+  accounts       Accounts[]
+  ownerOf        Tenants[]
+  memberOf       Members[]
+  loginAttempts  Int?          @default(0)
+  lockedUntil    DateTime?
+  enabled        Boolean       @default(true)
+  expiresAt      DateTime?
+  lastLogin      DateTime?
+  lastAccountId  String?
+  createdAt      DateTime?     @default(now())
+  createdBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt      DateTime?     @updatedAt
+  updatedBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt      DateTime?
+
+  @@map("y_idm_users")
+}
+
+model Identities {
+  id            String          @id @default(uuid())
+  userId        String          @unique
+  user          Users           @relation(fields: [userId], references: [id])
+  subscriptions Subscriptions[]
+  provider      Int
+  firstName     String?
+  lastName      String?
+  avatar        String?
+  createdAt     DateTime?       @default(now())
+  createdBy     String?         @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt     DateTime?       @updatedAt
+  updatedBy     String?         @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt     DateTime?
+
+  @@map("y_idm_user_identities")
+}
+
+model Accounts {
+  id        String    @id @default(uuid())
+  userId    String
+  user      Users?    @relation(fields: [userId], references: [id])
+  sessionId String?
+  session   Sessions? // @relation(fields: [sessionId], references: [id])
+  method    Int
+  provider  Int?
+  lastLogin DateTime?
+  email     String    @unique
+  phone     String?   @unique
+  uuid      String?   @unique
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_idm_identy_accounts")
+}
+
+// #endregion
+
+// #region Authorization
+model Groups {
+  id          Int       @id @default(autoincrement())
+  uid         String    @unique @default(uuid())
+  name        String
+  description String?
+  system      Boolean   @default(false)
+  createdAt   DateTime? @default(now())
+  createdBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt   DateTime? @updatedAt
+  updatedBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt   DateTime?
+
+  @@map("y_authz_groups")
+}
+
+model AuthorizationResources {
+  id             String        @id @default(uuid())
+  role           Int?
+  resources      Int[]
+  actions        Int[]
+  attributes     Int[]
+  enabled        Boolean?
+  authorizations Permissions[]
+  createdAt      DateTime?     @default(now())
+  createdBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt      DateTime?     @updatedAt
+  updatedBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt      DateTime?
+
+  @@map("y_authz_resources")
+}
+
+model Permissions {
+  id         String                  @id @default(uuid())
+  role       Int
+  resources  Int[]
+  actions    Int[]
+  attributes Int[]
+  resourceId String                  @map("resourcesId")
+  resource   AuthorizationResources? @relation(fields: [resourceId], references: [id])
+  userId     String?
+  user       Users?                  @relation(fields: [userId], references: [id])
+  teamId     String?
+  team       Teams?                  @relation(fields: [teamId], references: [id])
+  memberId   String?
+  member     Members?                @relation(fields: [memberId], references: [id])
+  enabled    Boolean?
+  createdAt  DateTime?               @default(now())
+  createdBy  String?                 @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt  DateTime?               @updatedAt
+  updatedBy  String?                 @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt  DateTime?
+
+  @@map("y_authz_permissions")
+}
+
+// #endregion
+
+// #region Tenant
+model Tenants {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  ownerId   String
+  owner     Users?    @relation(fields: [ownerId], references: [id])
+  hash      Hashes?
+  teams     Teams[]
+  invites   Invites[]
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_tenants")
+}
+
+model Invites {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  tenantId   String
+  tenant     Tenants?  @relation(fields: [tenantId], references: [id])
+  role       Int
+  teamId     String?
+  team       Teams?    @relation(fields: [teamId], references: [id])
+  token      String?   @unique @default(uuid())
+  accepted   Boolean?  @default(false)
+  lastSentAt DateTime?
+  expiresAt  DateTime?
+  createdAt  DateTime? @default(now())
+  createdBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt  DateTime? @updatedAt
+  updatedBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt  DateTime?
+
+  @@map("y_tenant_invites")
+}
+
+model Teams {
+  id             String        @id @default(uuid())
+  name           String        @unique
+  system         Boolean       @default(false)
+  tenantId       String
+  tenant         Tenants?      @relation(fields: [tenantId], references: [id])
+  invites        Invites[]
+  members        Members[]
+  authorizations Permissions[]
+  createdAt      DateTime?     @default(now())
+  createdBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt      DateTime?     @updatedAt
+  updatedBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt      DateTime?
+
+  @@map("y_tenant_teams")
+}
+
+model Members {
+  id             String        @id @default(uuid())
+  teamId         String?
+  team           Teams?        @relation(fields: [teamId], references: [id])
+  userId         String?
+  user           Users?        @relation(fields: [userId], references: [id])
+  authorizations Permissions[]
+  createdAt      DateTime?     @default(now())
+  createdBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt      DateTime?     @updatedAt
+  updatedBy      String?       @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt      DateTime?
+
+  @@index([teamId, userId], name: "team_id_unique")
+  @@map("y_tenant_team_members")
+}
+
+// #endregion
+
+// #region Complaince
+model Owners {
+  id         String    @id @default(uuid())
+  resourceId String
+  ownerId    String
+  createdAt  DateTime? @default(now())
+  createdBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt  DateTime? @updatedAt
+  updatedBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt  DateTime?
+
+  @@index([resourceId, ownerId], name: "resource_id_unique")
+  @@map("y_complaince_owners")
+}
+
+// #endregion
+
+// #region Subscritpions, Topics, Notifications
+model Subscriptions {
+  id         String      @id @default(uuid())
+  identityId String?
+  identity   Identities? @relation(fields: [identityId], references: [id])
+  email      Boolean?
+  fcm        String?
+  topics     Topics[]
+  createdAt  DateTime?   @default(now())
+  createdBy  String?     @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt  DateTime?   @updatedAt
+  updatedBy  String?     @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt  DateTime?
+
+  @@map("y_subscriptions")
+}
+
+model Topics {
+  id             String          @id @default(uuid())
+  subscriptionId String
+  subscription   Subscriptions   @relation(fields: [subscriptionId], references: [id])
+  topic          String          @unique
+  title          String
+  description    String
+  notifications  Notifications[]
+  createdAt      DateTime?       @default(now())
+  createdBy      String?         @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt      DateTime?       @updatedAt
+  updatedBy      String?         @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt      DateTime?
+
+  @@map("y_subscriptions_topics")
+}
+
+model Notifications {
+  id        String    @id @default(uuid())
+  topicId   String
+  topic     Topics?   @relation(fields: [topicId], references: [id])
+  title     String
+  body      String
+  data      String
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_subscriptions_notifications")
+}
+
+// #endregion
+
+// #region Security
+model BlackList {
+  id          String    @id @default(uuid())
+  type        Int // APP_BLACKLIST_RESOURCE_TYPE
+  status      Int // APP_BLACKLIST_RESOURCE_STATUS
+  action      Int // APP_BLACKLIST_RESOURCE_ACTION
+  reason      Int // APP_BLACKLIST_RESOURCE_REASON
+  value       String // any type value
+  description String?
+  createdAt   DateTime? @default(now())
+  createdBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt   DateTime? @updatedAt
+  updatedBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt   DateTime?
+
+  @@map("y_security_blacklist")
+}
+
+model Restrictions {
+  id          String    @id @default(uuid())
+  uuid        String // any object id
+  type        Int // APP_RESTRICIO_TYPE
+  value       String // any type value
+  description String?
+  createdAt   DateTime? @default(now())
+  createdBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt   DateTime? @updatedAt
+  updatedBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt   DateTime?
+
+  @@map("y_security_restrictions")
+}
+
+model Quarentines {
+  id          String    @id @default(uuid())
+  uuid        String // any object id
+  type        Int // APP_QUARENTINE_TYPE
+  reason      Int // APP_QUARENTINE_REASON
+  value       String // any type value
+  description String?
+  expiresAt   DateTime?
+  createdAt   DateTime? @default(now())
+  createdBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt   DateTime? @updatedAt
+  updatedBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt   DateTime?
+
+  @@map("y_security_quarentines")
+}
+
+model Banned {
+  id          String    @id @default(uuid())
+  uuid        String // any object id
+  type        Int // APP_BANNED_TYPE
+  reason      Int // APP_BANNED_REASON
+  value       String // any type value
+  description String?
+  expiresAt   DateTime?
+  createdAt   DateTime? @default(now())
+  createdBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt   DateTime? @updatedAt
+  updatedBy   String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt   DateTime?
+
+  @@map("y_security_banned")
+}
+
+model Hashes {
+  id            String    @id @default(uuid())
+  tenantId      String    @unique
+  tenant        Tenants?  @relation(fields: [tenantId], references: [id])
+  algorithm     String    @default("scrypt")
+  signerKey     String
+  saltSeparator String
+  rounds        Int
+  memoryCost    Int
+  createdAt     DateTime? @default(now())
+  createdBy     String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt     DateTime? @updatedAt
+  updatedBy     String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt     DateTime?
+
+  @@map("y_security_hashes")
+}
+
+model Credentials {
+  id         String    @id @default(uuid())
+  uuid       String
+  enabled    Boolean   @default(true)
+  hash       String
+  salt       String
+  connection String
+  createdAt  DateTime? @default(now())
+  createdBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt  DateTime? @updatedAt
+  updatedBy  String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt  DateTime?
+
+  @@map("y_security_credentials")
+}
+
+model PasswordHistory {
+  id        String    @id @default(uuid())
+  uuid      String
+  hash      String
+  salt      String
+  createdAt DateTime? @default(now())
+  createdBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  updatedAt DateTime? @updatedAt
+  updatedBy String?   @default(dbgenerated("current_setting('app.current_user_id'::text, true)"))
+  deletedAt DateTime?
+
+  @@map("y_security_password_history")
+}
+
+// #endregion

@@ -1,0 +1,87 @@
+-- AlterTable
+ALTER TABLE "y_authz_permissions" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_authz_resources" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_connectors" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_credentials" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_devices" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_hashes" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_identy_accounts" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_notifications" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_sessions" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_subscriptions" ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_subscriptions_topics" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_team_members" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_teams" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_tenant_invites" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_tenants" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_tests" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_user_identities" ALTER COLUMN "createdBy" DROP NOT NULL,
+ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "y_users" ALTER COLUMN "createdBy" SET DATA TYPE TEXT,
+ALTER COLUMN "updatedBy" SET DATA TYPE TEXT;
