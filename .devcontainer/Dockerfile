@@ -86,6 +86,11 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa \
         python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Python ultraviolet
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+
+
 # Install PHP
 RUN add-apt-repository -y ppa:ondrej/php \
     && apt-get update \
