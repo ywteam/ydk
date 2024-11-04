@@ -16,3 +16,6 @@
 [submodule "src/js"]
 	path = src/js
 	url = https://github.com/ywteam/ydk.js.git
+[submodule "src/opsh"]
+	path = src/opsh
+	url = https://github.com/ywteam/opsh.git
