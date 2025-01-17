@@ -1,0 +1,54 @@
+[global]
+  sendAnonymousUsage = false
+
+
+
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  network = "edge"
+  watch = true
+  exposedByDefault = false
+  # defaultRule = "Host(`{{ index .Labels \"traefik.subdomain\"  }}`)"
+
+[providers.swarm]
+  endpoint = "unix:///var/run/docker.sock"
+  network = "edge"
+  watch = true
+  exposedByDefault = false
+  # defaultRule = "Host(`{{ index .Labels \"traefik.subdomain\"  }}`)"
+
+[log]
+level = "DEBUG"
+format = "json"
+
+[accessLog]
+  # filePath = "/var/log/traefik/access.log"
+  format = "json"
+
+[entryPoints]
+ [entryPoints.web]
+   address = ":80"
+
+ [entryPoints.websecure]
+   address = ":443"
+
+[retry]
+
+[api]
+ dashboard = true
+ insecure = true
+
+[http.middlewares]
+  [http.middlewares.dash-strip.stripprefix]
+    prefixes = ["/dash/"]
+  [http.middlewares.api-strip.stripprefix]
+    prefixes = ["/api/"]  
+  [http.middlewares.auth.basicAuth]
+    users = ["${TRAEFIK_AUTH_USER:-admin}:${TRAEFIK_AUTH_PASS_HASH:-$apr1$1b1b1b1b$}"]
+    removeHeader = true
+
+# [certificatesResolvers.le.acme]
+#   email = "${ACME_EMAIL:-xxx@xxx.com}"
+#   storage = "${ACME_STORAGE:-/etc/traefik/conf/acme.json}"
+#   [certificatesResolvers.le.acme.httpChallenge]
+#     entryPoint = "web"

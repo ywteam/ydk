@@ -1,0 +1,107 @@
+x-traefik-svc: &traefik-svc
+  deploy: 
+    labels:
+      - "traefik.enable=true"
+      # traefik-dashboard@internal
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`gateway.${STACK_DOMAIN}`) && PathPrefix(`/dash/`)"
+      - "traefik.http.routers.traefik-dashboard.service=dashboard@internal"
+      # - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=web"  # ,websecure
+      # - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.middlewares=dash-strip"
+      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+      # traefik-api@internal
+      - "traefik.http.routers.traefik-api.rule=Host(`gateway.${STACK_DOMAIN}`) && PathPrefix(`/api/`)"
+      - "traefik.http.routers.traefik-api.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=api-strip"
+      # - "traefik.http.routers.traefik-api.tls=true"
+      - "traefik.http.routers.traefik-api.entrypoints=web" 
+      # - "traefik.http.routers.traefik-api.tls.certresolver=letsencrypt"
+      # - "traefik.http.routers.traefik-api.middlewares=dash-strip"
+      - "traefik.http.services.traefik-api.loadbalancer.server.port=8080"
+      # # acme-http@internal
+      # - "traefik.http.routers.acme-http.rule=Host(`${STACK_DOMAIN}`)"
+      # - "traefik.http.routers.acme-http.service=acme-http@internal"
+      # - "traefik.http.routers.acme-http.entrypoints=web"
+      # # acme-tls@internal
+      # - "traefik.http.routers.acme-tls.rule=Host(`traefik.${STACK_DOMAIN}`)"
+      # - "traefik.http.routers.acme-tls.service=acme-tls@internal"
+      # - "traefik.http.routers.acme-tls.entrypoints=websecure"
+      # - "traefik.http.routers.acme-tls.tls=true"
+      # - "traefik.http.routers.acme-tls.tls.certresolver=letsencrypt"
+      # # acme-dns@internal
+      # - "traefik.http.routers.acme-dns.rule=Host(`traefik.${STACK_DOMAIN}`)"
+      # - "traefik.http.routers.acme-dns.service=acme-dns@internal"
+      # - "traefik.http.routers.acme-dns.entrypoints=web"
+      # - "traefik.http.routers.acme-dns.middlewares=traefik-strip"
+      # # security headers
+      # - "traefik.http.middlewares.security-headers.headers.SSLRedirect=true"
+      # - "traefik.http.middlewares.security-headers.headers.STSSeconds=315360000"
+      # - "traefik.http.middlewares.security-headers.headers.browserXSSFilter=true"
+      # - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+      # - "traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
+      # - "traefik.http.middlewares.security-headers.headers.SSLHost=${STACK_DOMAIN}"
+      # - "traefik.http.middlewares.security-headers.headers.STSIncludeSubdomains=true"
+      # - "traefik.http.middlewares.security-headers.headers.STSPreload=true"
+      # - "traefik.http.routers.traefik.middlewares=security-headers@docker"
+      # - "traefik.http.middlewares.traefik.headers.SSLRedirect=true"
+      # - "traefik.http.middlewares.traefik.headers.STSSeconds=315360000"
+      # - "traefik.http.middlewares.traefik.headers.browserXSSFilter=true"
+      # - "traefik.http.middlewares.traefik.headers.contentTypeNosniff=true"
+      # - "traefik.http.middlewares.traefik.headers.forceSTSHeader=true"
+      # - "traefik.http.middlewares.traefik.headers.SSLHost=${STACK_DOMAIN}"
+      # - "traefik.http.middlewares.traefik.headers.STSIncludeSubdomains=true"
+      # - "traefik.http.middlewares.traefik.headers.STSPreload=true"
+      # - "traefik.http.routers.traefik.middlewares=traefik@docker"
+      # - "traefik.enable=true"
+      # - "traefik.http.routers.traefik-api.rule=Host(`gateway.${STACK_DOMAIN}`)"
+      # - "traefik.http.routers.traefik-api.service=api@internal"
+      # - "traefik.http.routers.traefik-api.entrypoints=web"  # ,websecure
+      # - "traefik.http.services.traefik-api.loadbalancer.server.port=8080"
+      # - "traefik.http.routers.traefik-dashboard.rule=Host(`gateway.${STACK_DOMAIN}`) && PathPrefix(`/dash/`)"
+      # - "traefik.http.routers.traefik-dashboard.service=dashboard@internal"
+      # - "traefik.http.routers.traefik-dashboard.entrypoints=web"  # ,websecure
+      # # - "traefik.http.routers.traefik-dashboard.middlewares=auth"
+      # - "traefik.http.routers.traefik-dashboard.middlewares=dash-strip"
+      # - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+      # - "traefik.http.routers.acme-http.rule=PathPrefix(`/.well-known/acme-challenge/`)"
+      # - "traefik.http.routers.acme-http.entrypoints=web"
+      # - "traefik.http.routers.acme-http.service=acme-http@internal"
+      # - "traefik.http.services.acme-http.loadbalancer.server.port=8080"
+  extends:
+    file: ../compose.base.yaml
+    service: yellow-global-svc
+  image: traefik:${TRAEFIK_DOCKER_TAG:-v3.2}
+  networks:
+    - traefik
+
+
+services:
+  traefik:
+    <<: *traefik-svc
+    container_name: gateway
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ${COMPOSE_CURRENT_DIR}/traefik/config:/config
+      - ${COMPOSE_CURRENT_DIR}/traefik/config/traefik.toml:/etc/traefik/traefik.toml
+      - ${COMPOSE_CURRENT_DIR}/traefik/config/acme.json:/etc/traefik/conf/acme.json:rw
+    ports:
+      - "80:80" # The HTTP port
+      - "8080:8080"
+      - 443:443
+    #   - "5001:443" # Needed for SNI challenge
+    #   - "5002:80" # Needed for HTTP challenge
+    networks:
+      - edge
+  whoami:
+    image: "containous/whoami"
+    container_name: whoami
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.whoami.rule=Host(`whoami.${STACK_DOMAIN}`)"
+        - "traefik.http.routers.whoami.entrypoints=web"
+        - "traefik.http.services.whoami2.loadbalancer.server.port=:80"
+    networks:
+      - edge

@@ -1,0 +1,16 @@
+include:
+  - path:
+    # - cloudflared/compose.yaml
+    - traefik/compose.yaml
+
+
+networks:
+  yellow:
+    name: vps
+    driver: bridge
+    external: false
+    internal: true
+  edge:
+    name: edge
+    driver: bridge
+    attachable: true

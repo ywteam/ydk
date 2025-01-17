@@ -1,0 +1,85 @@
+x-yellow-svc-env: &yellow-svc-env
+  YDK_VERSION: 1.0.0
+  # - USER_ID=1000
+  # - GROUP_ID=1000
+  TZ: ${TZ:-UTC}  
+x-yellow-svc-deploy:
+  # resources:
+  #   limits:
+  #     cpus: '0.50'
+  #     memory: 200M
+  #   reservations:
+  #     cpus: '0.25'
+  #     memory: 50M
+  &yellow-svc-deploy
+  restart_policy:
+    condition: on-failure
+    delay: 5s
+    max_attempts: 3
+    window: 120s
+  rollback_config:
+    parallelism: 1
+    delay: 10s
+    failure_action: rollback
+    monitor: 60s
+    order: stop-first
+  update_config:
+    parallelism: 1
+    delay: 10s
+    order: stop-first
+  placement:
+    constraints:
+      - node.role == manager
+x-yellow-svc: &yellow-svc
+  environment:
+    <<: *yellow-svc-env
+  # user: "${USER_ID}:${GROUP_ID}"  
+  labels:
+    - version=1.0.0
+  networks:
+    - yellow
+  logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '5'
+  deploy:
+    <<: *yellow-svc-deploy
+
+services:
+  yellow-svc:
+    <<: *yellow-svc
+  yellow-tty-svc:
+    tty: true # docker run -t
+    <<: *yellow-svc
+  yellow-stdin-svc:
+    stdin_open: true # docker run -i
+    <<: *yellow-svc
+  yellow-it-svc:
+    tty: true # docker run -t
+    stdin_open: true # docker run -i
+    <<: *yellow-svc
+  yellow-manager-svc:
+    <<: *yellow-svc
+    deploy:
+      <<: *yellow-svc-deploy
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+  yellow-worker-svc:
+    <<: *yellow-svc
+    deploy:
+      <<: *yellow-svc-deploy
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+  yellow-global-svc:
+    <<: *yellow-svc
+    deploy:
+      <<: *yellow-svc-deploy
+      mode: global      
+
