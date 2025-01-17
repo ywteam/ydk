@@ -22,3 +22,6 @@
 [submodule "infra/deployments"]
 	path = infra/deployments
 	url = https://github.com/ywteam/deployments.git
+[submodule "docs"]
+	path = docs
+	url = https://github.com/ywteam/docs.git
