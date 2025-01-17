@@ -19,3 +19,6 @@
 [submodule "src/opsh"]
 	path = src/opsh
 	url = https://github.com/ywteam/opsh.git
+[submodule "infra/deployments"]
+	path = infra/deployments
+	url = https://github.com/ywteam/deployments.git
